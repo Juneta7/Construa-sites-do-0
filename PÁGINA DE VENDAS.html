@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Como Criar um Site e Hospedá-lo no GitHub — Guia Prático</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF8F3;
+    --paper-dim:#F2EFE7;
+    --ink:#191A16;
+    --muted:#6B6558;
+    --navy:#152238;
+    --navy-dim:#1D2E4A;
+    --green:#175C33;
+    --green-bright:#1F8148;
+    --amber:#B8721F;
+    --amber-soft:#F4E3CC;
+    --line:#DFDACB;
+    --radius-s:3px;
+    --maxw:980px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    line-height:1.12;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;}
+  a{color:inherit;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px;}
+  img,svg{display:block; max-width:100%;}
+  ::selection{background:var(--green); color:var(--paper);}
+
+  a:focus-visible, button:focus-visible, summary:focus-visible{
+    outline:2px solid var(--green-bright);
+    outline-offset:3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:40;
+    background:rgba(250,248,243,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:var(--maxw); margin:0 auto; padding:16px 28px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+  }
+  .brand{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600; font-size:15px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .brand-dot{width:8px; height:8px; border-radius:50%; background:var(--green-bright); display:inline-block;}
+  .nav-cta{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:500;
+    background:var(--ink); color:var(--paper);
+    padding:9px 16px; border-radius:var(--radius-s);
+    text-decoration:none; white-space:nowrap;
+    transition:background 0.15s ease;
+  }
+  .nav-cta:hover{background:var(--green);}
+
+  /* ---------- BUTTONS ---------- */
+  .btn-primary{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--green); color:var(--paper);
+    font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:13px;
+    padding:12px 20px; border-radius:var(--radius-s);
+    text-decoration:none; border:none; cursor:pointer;
+    transition:background 0.15s ease, transform 0.15s ease;
+  }
+  .btn-primary:hover{background:var(--green-bright); transform:translateY(-1px);}
+  .btn-ghost{
+    display:inline-flex; align-items:center;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:500;
+    color:var(--ink); text-decoration:none;
+    border-bottom:1px solid var(--muted);
+    padding-bottom:2px;
+  }
+  .btn-ghost:hover{border-color:var(--ink);}
+
+  /* topo — botão de compra imediato */
+  .top-buy{
+    text-align:center; padding:16px 0;
+    border-bottom:1px solid var(--line);
+    background:var(--paper-dim);
+  }
+  .top-buy .btn-primary{font-size:13px; padding:11px 22px;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:40px 0 56px;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:38px; align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(1.7rem, 3.2vw, 2.5rem);
+    color:var(--ink);
+  }
+  .hero-sub{
+    margin-top:16px; font-size:15px; color:#3A362D; max-width:46ch;
+  }
+  .hero-facts{
+    margin-top:20px; display:flex; flex-wrap:wrap; gap:14px 22px;
+  }
+  .hero-fact{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--muted);}
+  .hero-fact b{color:var(--ink); font-weight:600;}
+  .hero-actions{margin-top:24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;}
+
+  /* browser mockup */
+  .browser{
+    background:#fff;
+    border-radius:8px;
+    border:1px solid var(--line);
+    box-shadow:0 24px 60px -24px rgba(21,34,56,0.35);
+    overflow:hidden;
+    transform:rotate(0.6deg);
+  }
+  .browser-bar{
+    background:var(--navy);
+    padding:12px 14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .dot{width:9px; height:9px; border-radius:50%; opacity:0.85;}
+  .dot.r{background:#E5637A;} .dot.y{background:#E5B85C;} .dot.g{background:#63C48A;}
+  .browser-address{
+    flex:1; margin-left:8px;
+    background:rgba(255,255,255,0.08);
+    border-radius:5px; padding:6px 10px;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:#CFE0D2;
+    white-space:nowrap; overflow:hidden;
+  }
+  .typed::after{
+    content:'|'; margin-left:2px; color:#8FD1A4;
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  .site-preview header{
+    background:var(--green); color:#fff; padding:26px 20px 22px; text-align:center;
+  }
+  .site-preview header h2{font-family:'Fraunces', serif; font-size:18px; font-weight:600; margin:0 0 5px;}
+  .site-preview header p{font-size:12px; color:#CFEBD8; margin:0;}
+  .site-preview section{padding:18px 20px 16px; max-width:480px; margin:0 auto;}
+  .site-preview section h3{font-size:12.5px; font-weight:600; margin-bottom:6px; font-family:'IBM Plex Sans', sans-serif;}
+  .site-preview section p{font-size:12px; color:#5A564A;}
+  .site-preview footer{text-align:center; padding:11px; font-size:10px; color:#9B968A; border-top:1px solid #EFECE3;}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:42px 0;}
+  .section-head{max-width:560px; margin-bottom:30px;}
+  .section-head h2{font-size:clamp(1.35rem, 2vw, 1.75rem);}
+  .section-head p{margin-top:10px; font-size:14px; color:#4C4738;}
+  .divider{border:none; border-top:1px solid var(--line); margin:0;}
+
+  /* ---------- STRIP OF FACTS ---------- */
+  .facts-strip{
+    background:var(--paper-dim);
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .facts-row{
+    display:flex; flex-wrap:wrap;
+  }
+  .fact-item{
+    flex:1 1 180px; padding:18px 22px;
+    border-right:1px solid var(--line);
+  }
+  .fact-item:last-child{border-right:none;}
+  .fact-item .num{font-family:'Fraunces', serif; font-size:1.5rem; font-weight:600; color:var(--green);}
+  .fact-item .label{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--muted); margin-top:3px;}
+
+  /* ---------- PAIN BLOCKS (reusing guide's own callout language) ---------- */
+  .callouts{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  .callout{
+    padding:16px 16px; border-radius:var(--radius-s);
+    border-left:4px solid; font-size:13px;
+  }
+  .callout .tag{font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:600; letter-spacing:0.02em; margin-bottom:8px; display:block;}
+  .callout.dark{background:var(--navy); color:#E4E7EC; border-color:#3A5171;}
+  .callout.dark .tag{color:#8FB4E0;}
+  .callout.green{background:#E8F1EA; color:#1E3524; border-color:var(--green);}
+  .callout.green .tag{color:var(--green);}
+  .callout.amber{background:var(--amber-soft); color:#4A3011; border-color:var(--amber);}
+  .callout.amber .tag{color:var(--amber);}
+
+  /* ---------- COMMIT TIMELINE ---------- */
+  .timeline{position:relative; margin-top:8px;}
+  .timeline::before{
+    content:''; position:absolute; left:9px; top:6px; bottom:6px; width:1px; background:var(--line);
+  }
+  .commit{position:relative; padding:0 0 20px 32px;}
+  .commit:last-child{padding-bottom:0;}
+  .commit::before{
+    content:''; position:absolute; left:0; top:3px; width:16px; height:16px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--green); box-shadow:0 0 0 4px var(--paper);
+  }
+  .commit-hash{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--green); font-weight:600;}
+  .commit-msg{font-family:'Fraunces', serif; font-size:1rem; font-weight:600; margin-top:3px;}
+  .commit-desc{margin-top:4px; font-size:13px; color:#4C4738; max-width:52ch;}
+
+  /* ---------- CHAPTER INDEX ---------- */
+  .chapters{
+    display:grid; grid-template-columns:1fr 1fr; column-gap:48px;
+    border-top:1px solid var(--line);
+  }
+  .chapter-row{
+    display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--line);
+    align-items:baseline;
+  }
+  .chapter-num{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--green); min-width:22px;}
+  .chapter-title{font-size:13.5px;}
+
+  /* ---------- BONUS ---------- */
+  .bonus{
+    background:var(--navy); color:#EDEFF3; border-radius:10px; padding:30px 28px;
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:28px; align-items:center;
+  }
+  .bonus h2{color:#fff; font-size:1.35rem;}
+  .bonus p{color:#B9C2D0; margin-top:10px; font-size:13px;}
+  .prompt-box{
+    background:#0F1826; border:1px solid #2C3E58; border-radius:6px; padding:14px 16px;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; line-height:1.65; color:#B8E3C6;
+    max-height:180px; overflow:hidden; position:relative;
+  }
+  .prompt-box::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:60px;
+    background:linear-gradient(transparent, #0F1826);
+  }
+
+  /* ---------- FIT ---------- */
+  .fit-grid{display:grid; grid-template-columns:1fr 1fr; gap:28px;}
+  .fit-col h3{font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; margin-bottom:16px;}
+  .fit-col ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .fit-col li{display:flex; gap:10px; font-size:15px; color:#3A362D;}
+  .fit-col.yes h3{color:var(--green);}
+  .fit-col.no h3{color:var(--amber);}
+  .mark{font-family:'IBM Plex Mono', monospace; font-weight:600; flex-shrink:0;}
+  .fit-col.yes .mark{color:var(--green);}
+  .fit-col.no .mark{color:var(--amber);}
+
+  /* ---------- ISSUES / TESTIMONIALS ---------- */
+  .issues{display:flex; flex-direction:column; gap:12px;}
+  .issue{
+    border:1px solid var(--line); border-radius:6px; padding:16px 18px;
+    background:#fff;
+  }
+  .issue-head{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+  .issue-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:600;
+    background:#E8F1EA; color:var(--green); padding:2px 7px; border-radius:10px;
+  }
+  .issue-title{font-family:'Fraunces', serif; font-size:0.95rem; font-weight:600;}
+  .issue-body{font-size:13px; color:#4C4738;}
+  .issue-meta{margin-top:8px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--muted);}
+
+  /* ---------- PRICING ---------- */
+  .price-card{
+    max-width:380px; margin:0 auto;
+    border:1px solid var(--line); border-radius:10px; background:#fff;
+    padding:28px 26px; text-align:center;
+  }
+  .price-card .label{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--muted);}
+  .price-row{display:flex; align-items:baseline; justify-content:center; gap:8px; margin:10px 0 4px;}
+  .price-old{font-family:'IBM Plex Mono', monospace; font-size:14px; color:var(--muted); text-decoration:line-through;}
+  .price-new{font-family:'Fraunces', serif; font-size:2.2rem; font-weight:600; color:var(--ink);}
+  .price-note{font-size:12px; color:var(--muted); margin-bottom:18px;}
+  .price-list{list-style:none; margin:0 0 20px; padding:0; text-align:left; display:flex; flex-direction:column; gap:8px;}
+  .price-list li{display:flex; gap:8px; font-size:13px;}
+  .guarantee{margin-top:14px; font-size:11.5px; color:var(--muted);}
+
+  /* ---------- FAQ ---------- */
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-item summary{
+    cursor:pointer; padding:14px 0; font-family:'Fraunces', serif; font-size:0.95rem; font-weight:600;
+    list-style:none; display:flex; justify-content:space-between; align-items:center; gap:20px;
+  }
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item summary::after{
+    content:'+'; font-family:'IBM Plex Mono', monospace; font-size:17px; color:var(--muted); flex-shrink:0;
+  }
+  .faq-item[open] summary::after{content:'–';}
+  .faq-item p{padding:0 0 16px; font-size:13px; color:#4C4738; max-width:64ch;}
+
+  /* ---------- FINAL CTA ---------- */
+  .final-cta{
+    background:var(--ink); color:var(--paper); border-radius:10px;
+    padding:38px 32px; text-align:center;
+  }
+  .final-cta h2{color:#fff; font-size:clamp(1.35rem,2.4vw,1.75rem);}
+  .final-cta p{color:#C9C4B6; margin-top:10px; font-size:13.5px;}
+  .final-cta .btn-primary{margin-top:18px;}
+
+  footer.site-footer{
+    padding:36px 0 60px; font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--muted);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 860px){
+    .hero-grid{grid-template-columns:1fr;}
+    .browser{order:-1; transform:none;}
+    .callouts{grid-template-columns:1fr;}
+    .chapters{grid-template-columns:1fr;}
+    .bonus{grid-template-columns:1fr;}
+    .fit-grid{grid-template-columns:1fr;}
+    .facts-row{flex-direction:column;}
+    .fact-item{border-right:none; border-bottom:1px solid var(--line);}
+    .fact-item:last-child{border-bottom:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="brand"><span class="brand-dot"></span>guia-github-pages</div>
+    <a class="nav-cta" href="#oferta">Quero meu site no ar</a>
+  </div>
+</nav>
+
+<div class="top-buy">
+  <a class="btn-primary" href="#oferta">COMPRAR AGORA</a>
+</div>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Do computador vazio a um site publicado, ainda hoje.</h1>
+      <p class="hero-sub">Um guia passo a passo em português para criar seu site com HTML e CSS e colocá-lo no ar de graça, no GitHub Pages — mesmo que você nunca tenha escrito uma linha de código.</p>
+      <div class="hero-facts">
+        <div class="hero-fact"><b>0</b> experiência exigida</div>
+        <div class="hero-fact"><b>1–2h</b> até publicar</div>
+        <div class="hero-fact"><b>R$0</b> de hospedagem, para sempre</div>
+      </div>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#oferta">Quero meu site no ar</a>
+        <a class="btn-ghost" href="#sumario">ver o sumário completo</a>
+      </div>
+    </div>
+
+    <div class="browser" role="img" aria-label="Exemplo de site publicado, com endereço seuusuario.github.io">
+      <div class="browser-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="browser-address"><span class="typed">https://seuusuario.github.io</span></div>
+      </div>
+      <div class="site-preview">
+        <header>
+          <h2>Olá, eu sou o Junior</h2>
+          <p>Bem-vindo ao meu site!</p>
+        </header>
+        <section>
+          <h3>Sobre mim</h3>
+          <p>Escrevo, ilustro e às vezes as duas coisas ao mesmo tempo. Esse cantinho é onde guardo meus projetos.</p>
+        </section>
+        <footer>© 2026 — Todos os direitos reservados</footer>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="facts-strip">
+  <div class="wrap facts-row">
+    <div class="fact-item"><div class="num">12</div><div class="label">capítulos, do zero à publicação</div></div>
+    <div class="fact-item"><div class="num">2</div><div class="label">caminhos: pelo site ou pelo terminal</div></div>
+    <div class="fact-item"><div class="num">1</div><div class="label">endereço seu, tipo seunome.github.io</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Você já tentou começar um site antes?</h2>
+      <p>Não é falta de vontade. É que a maioria dos tutoriais pula direto para o meio da história.</p>
+    </div>
+    <div class="callouts">
+      <div class="callout dark">
+        <span class="tag mono">SEM O GUIA</span>
+        Você abre um vídeo de 40 minutos, se perde em termos como "repositório" e "commit" na primeira frase, e fecha a aba.
+      </div>
+      <div class="callout amber">
+        <span class="tag mono">ATENÇÃO</span>
+        A maior parte dos cursos ensina a programar. Você só quer um site no ar — e isso é um problema bem menor do que parece.
+      </div>
+      <div class="callout green">
+        <span class="tag mono">COM O GUIA</span>
+        Cada capítulo assume que você concluiu o anterior. Sem pular etapas, sem termo técnico sem explicação.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sumario">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>O caminho que você vai percorrer</h2>
+      <p>Cinco movimentos simples — cada um construído sobre o anterior.</p>
+    </div>
+    <div class="timeline">
+      <div class="commit">
+        <div class="commit-hash">passo 1</div>
+        <div class="commit-msg">Criar sua conta gratuita no GitHub</div>
+        <div class="commit-desc">Cinco minutos, um e-mail, e você já tem onde guardar seu site.</div>
+      </div>
+      <div class="commit">
+        <div class="commit-hash">passo 2</div>
+        <div class="commit-msg">Escrever os arquivos do site no computador</div>
+        <div class="commit-desc">Um arquivo de estrutura (HTML) e um de aparência (CSS). O guia te entrega os dois prontos para editar.</div>
+      </div>
+      <div class="commit">
+        <div class="commit-hash">passo 3</div>
+        <div class="commit-msg">Criar o repositório e enviar os arquivos</div>
+        <div class="commit-desc">Dois métodos ensinados lado a lado: arrastar e soltar pelo site, ou pelo terminal, para quem quer ir mais fundo.</div>
+      </div>
+      <div class="commit">
+        <div class="commit-hash">passo 4</div>
+        <div class="commit-msg">Ativar o GitHub Pages</div>
+        <div class="commit-desc">Três cliques nas configurações do repositório transformam seus arquivos em um endereço público.</div>
+      </div>
+      <div class="commit">
+        <div class="commit-hash">passo 5</div>
+        <div class="commit-msg">Testar, revisar e aprender a atualizar</div>
+        <div class="commit-desc">Seu site nunca fica "pronto para sempre" — você aprende a mudá-lo sempre que quiser.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--paper-dim); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Dentro do guia</h2>
+      <p>Doze capítulos curtos, na ordem em que você realmente vai usá-los.</p>
+    </div>
+    <div class="chapters">
+      <div>
+        <div class="chapter-row"><span class="chapter-num">01</span><span class="chapter-title">O que você vai construir</span></div>
+        <div class="chapter-row"><span class="chapter-num">02</span><span class="chapter-title">Entendendo HTML, CSS, Git e GitHub</span></div>
+        <div class="chapter-row"><span class="chapter-num">03</span><span class="chapter-title">Preparando contas e programas</span></div>
+        <div class="chapter-row"><span class="chapter-num">04</span><span class="chapter-title">Criando os arquivos do seu site</span></div>
+        <div class="chapter-row"><span class="chapter-num">05</span><span class="chapter-title">Criando seu repositório no GitHub</span></div>
+        <div class="chapter-row"><span class="chapter-num">06</span><span class="chapter-title">Enviando os arquivos para o GitHub</span></div>
+      </div>
+      <div>
+        <div class="chapter-row"><span class="chapter-num">07</span><span class="chapter-title">Publicando com o GitHub Pages</span></div>
+        <div class="chapter-row"><span class="chapter-num">08</span><span class="chapter-title">Testando e revisando o site no ar</span></div>
+        <div class="chapter-row"><span class="chapter-num">09</span><span class="chapter-title">Atualizando o site depois de publicado</span></div>
+        <div class="chapter-row"><span class="chapter-num">10</span><span class="chapter-title">Usando um domínio próprio (opcional)</span></div>
+        <div class="chapter-row"><span class="chapter-num">11</span><span class="chapter-title">Erros comuns e como resolver</span></div>
+        <div class="chapter-row"><span class="chapter-num">12</span><span class="chapter-title">Próximos passos</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="bonus">
+      <div>
+        <h2>Bônus: um atalho com IA</h2>
+        <p>Se preferir pular a etapa de escrever HTML e CSS na mão, o guia inclui um prompt pronto para colar no Claude e receber os arquivos do seu site já formatados — é só preencher seu nome, sua cor preferida e o objetivo do site.</p>
+      </div>
+      <div class="prompt-box">
+Aja como um desenvolvedor front-end<br>
+especializado em sites simples para<br>
+iniciantes.<br><br>
+Crie os arquivos completos de um site<br>
+em HTML e CSS puro, com: cabeçalho,<br>
+seção "Sobre" e rodapé...<br><br>
+Nome ou marca: [SEU NOME]<br>
+Objetivo do site: [...]<br>
+Cor principal: [...]
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Para quem é este guia</h2>
+    </div>
+    <div class="fit-grid">
+      <div class="fit-col yes">
+        <h3>É para você se...</h3>
+        <ul>
+          <li><span class="mark">sim</span> Você quer um portfólio, currículo ou landing page simples no ar.</li>
+          <li><span class="mark">sim</span> Nunca escreveu uma linha de código e quer começar por algo real.</li>
+          <li><span class="mark">sim</span> Prefere aprender fazendo, um passo de cada vez.</li>
+          <li><span class="mark">sim</span> Não quer pagar mensalidade de hospedagem.</li>
+        </ul>
+      </div>
+      <div class="fit-col no">
+        <h3>Talvez não seja se...</h3>
+        <ul>
+          <li><span class="mark">não</span> Você precisa de login de usuários ou banco de dados.</li>
+          <li><span class="mark">não</span> Está construindo uma loja virtual completa.</li>
+          <li><span class="mark">não</span> Já publica sites no GitHub Pages com frequência.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--paper-dim); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Quem seguiu o guia</h2>
+    </div>
+    <div class="issues">
+      <div class="issue">
+        <div class="issue-head"><span class="issue-badge">closed</span><span class="issue-title">"Não sei nada de programação, isso é pra mim?"</span></div>
+        <p class="issue-body">Segui capítulo por capítulo num domingo à tarde. Publiquei meu portfólio de fotografia antes do café da tarde esfriar.</p>
+        <div class="issue-meta">— R.M., publicou em rm.github.io</div>
+      </div>
+      <div class="issue">
+        <div class="issue-head"><span class="issue-badge">closed</span><span class="issue-title">"Travei no 'git push' pedindo senha"</span></div>
+        <p class="issue-body">O capítulo de erros comuns resolveu em dois minutos algo que eu tinha pesquisado por uma hora sem entender.</p>
+        <div class="issue-meta">— T.A., publicou em taalves.github.io</div>
+      </div>
+      <div class="issue">
+        <div class="issue-head"><span class="issue-badge">closed</span><span class="issue-title">"Achei que precisaria pagar hospedagem"</span></div>
+        <p class="issue-body">Usei o método sem terminal, só arrastando os arquivos. Site no ar, de graça, e ainda uso o prompt de bônus pra ajustar o visual.</p>
+        <div class="issue-meta">— C.S., publicou em csdesign.github.io</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="oferta">
+  <div class="wrap">
+    <div class="price-card">
+      <div class="label mono">acesso completo</div>
+      <div class="price-row">
+        <span class="price-old mono">R$ 97</span>
+        <span class="price-new">R$ 37</span>
+      </div>
+      <p class="price-note">pagamento único — sem mensalidade</p>
+      <ul class="price-list">
+        <li><span class="mark" style="color:var(--green);">✓</span> Guia completo em PDF, 12 capítulos</li>
+        <li><span class="mark" style="color:var(--green);">✓</span> Prompt de IA bônus para gerar seu site</li>
+        <li><span class="mark" style="color:var(--green);">✓</span> Capítulo de domínio próprio (opcional)</li>
+        <li><span class="mark" style="color:var(--green);">✓</span> Checklist de erros comuns e soluções</li>
+        <li><span class="mark" style="color:var(--green);">✓</span> Atualizações futuras incluídas</li>
+      </ul>
+      <a class="btn-primary" style="width:100%; justify-content:center;" href="#">Quero meu site no ar</a>
+      <p class="guarantee">Garantia de 7 dias: se não publicar seu site, devolvemos seu dinheiro.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap" style="max-width:760px;">
+    <div class="section-head">
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary>Preciso saber programar antes de começar?</summary>
+        <p>Não. O guia explica cada termo técnico na primeira vez que ele aparece e assume que essa é a sua primeira vez mexendo em código.</p>
+      </details>
+      <details class="faq-item">
+        <summary>O site publicado é realmente gratuito para sempre?</summary>
+        <p>Sim. O GitHub Pages não cobra pela hospedagem de sites estáticos como o que você vai construir, mesmo para uso comercial simples.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Funciona no meu computador (Windows, Mac ou Linux)?</summary>
+        <p>Sim, o guia cobre os três sistemas em cada etapa que muda de um para o outro.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Consigo usar meu próprio domínio, tipo meunome.com?</summary>
+        <p>Sim, o capítulo 10 mostra como conectar um domínio próprio caso você já tenha ou queira comprar um depois.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Em quanto tempo eu tenho o site no ar?</summary>
+        <p>A maioria das pessoas conclui entre 1 e 2 horas, seguindo com calma capítulo por capítulo.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="final-cta">
+      <h2>Seu site está a um guia de distância.</h2>
+      <p>Sem mensalidade, sem servidor, sem precisar saber programar antes de começar.</p>
+      <a class="btn-primary" href="#oferta">Quero meu site no ar</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; width:100%;">
+    <span>guia-github-pages © 2026</span>
+    <span>HTML · CSS · GitHub Pages</span>
+  </div>
+</footer>
+
+</body>
+</html>
